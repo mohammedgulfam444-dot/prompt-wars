@@ -1,0 +1,109 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>NovaTrust - inventory trust layer for NOVA CART</title>
+<style>
+:root{--bg:#f2f5f3;--card:#fff;--ink:#15211e;--mut:#5d6b66;--line:#d8e0dc;--pri:#2f45b5;--ok:#1d8a57;--warn:#b97a00;--bad:#c13b3b;--okb:#e3f3ea;--warnb:#fbf0d9;--badb:#f9e3e3;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1614;--card:#162320;--ink:#e6efeb;--mut:#9aaca5;--line:#2a3a36;--pri:#8ea0ff;--ok:#4fc68b;--warn:#e3b04b;--bad:#ef7b7b;--okb:#17352a;--warnb:#3a2f14;--badb:#3d1e1e}}
+:root[data-theme="dark"]{--bg:#0e1614;--card:#162320;--ink:#e6efeb;--mut:#9aaca5;--line:#2a3a36;--pri:#8ea0ff;--ok:#4fc68b;--warn:#e3b04b;--bad:#ef7b7b;--okb:#17352a;--warnb:#3a2f14;--badb:#3d1e1e}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+.w{max-width:880px;margin:0 auto;padding:18px 14px 48px}
+h1{font:700 30px/1.1 Georgia,'Times New Roman',serif;margin:6px 0 4px}h2{font:700 19px Georgia,serif;margin:0 0 10px}
+p{margin:0 0 8px}.mut,small{color:var(--mut)}small{display:block;font-size:13px}
+nav{display:flex;gap:6px;margin:14px 0;flex-wrap:wrap}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:6px 12px}
+button:hover{border-color:var(--pri)}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--pri);outline-offset:2px}
+nav button.on,.pri{background:var(--pri);color:#fff;border-color:var(--pri)}
+button:disabled{opacity:.45;cursor:default}
+.c{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
+.row{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--line);flex-wrap:wrap}.row:first-child{border-top:0}
+.row>div:first-child{flex:1;min-width:150px}
+input[type=text],select{font:inherit;width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+.m{display:inline-block;width:70px;height:8px;background:var(--line);border-radius:4px;overflow:hidden;vertical-align:middle}.m i{display:block;height:100%}
+.tag{font-size:12px;padding:2px 8px;border-radius:99px;font-weight:600}
+.ok{background:var(--okb);color:var(--ok)}.warn{background:var(--warnb);color:var(--warn)}.bad{background:var(--badb);color:var(--bad)}.gr{background:var(--line);color:var(--mut)}
+.sw{display:flex;gap:8px;align-items:center;margin-bottom:10px;font-weight:600}
+.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
+.big{font:700 26px Georgia,serif}.bar{height:14px;border-radius:7px;background:var(--line);overflow:hidden;margin:4px 0 10px}.bar i{display:block;height:100%}
+.sl{display:grid;grid-template-columns:1fr 70px;gap:4px 10px;align-items:center;margin-bottom:8px}.sl input{grid-column:1/3;width:100%}
+.ev{border-left:3px solid var(--pri);padding-left:10px;margin:6px 0}
+</style></head><body><div class="w">
+<h1>NovaTrust</h1>
+<p class="mut">NOVA CART keeps showing items stores no longer have. NovaTrust scores how likely each listing is really in stock, steers customers to reliable ones, and makes it one tap for stores to keep stock honest.</p>
+<nav id="nav"><button class="on" onclick="tab(0)">Customer app</button><button onclick="tab(1)">Store dashboard</button><button onclick="tab(2)">Business proof</button></nav>
+
+<section id="v0">
+<div class="c"><label class="sw"><input type="checkbox" id="on" checked onchange="on=this.checked;res()"> Trust layer on <small style="display:inline;font-weight:400">(switch off to see today's app)</small></label>
+<input type="text" id="q" placeholder="Search milk, paracetamol, notebook, ragi flour..." oninput="q=this.value;res()" onkeydown="if(event.key==='Enter')gap()"></div>
+<div class="c" id="res"></div>
+<div class="c"><h2>Your basket</h2><div id="cart"></div><div id="rc"></div></div>
+</section>
+
+<section id="v1" hidden><div class="c"><select id="ss" onchange="cur=+this.value;sv()"></select></div><div id="sv"></div></section>
+
+<section id="v2" hidden>
+<div class="c"><h2>Why this problem</h2>
+<div class="ev">53% of cancellations are "product unavailable" or "store rejected", about 5.8% of all orders.</div>
+<div class="ev">28% of support tickets are missing or wrong items, and 29% are refund status.</div>
+<div class="ev">Promo spend rose 79% while orders rose 23%; repeat purchase fell from 41% to 27%.</div></div>
+<div class="c"><h2>Live simulation</h2><p class="mut">3,000 orders against the stores in this prototype. Reality is sampled from a stock-depletion model; the app only sees stale listings.</p>
+<button class="pri" onclick="sim();calc()">Run simulation again</button><div id="sim"></div></div>
+<div class="c"><h2>Business impact for NOVA CART</h2>
+<div class="sl"><span>Stores actively using it</span><b id="a1"></b><input type="range" id="ad" min="10" max="100" value="60" oninput="calc()"></div>
+<div class="sl"><span>Repeat rate recovered (points)</span><b id="a2"></b><input type="range" id="pp" min="0" max="14" value="4" oninput="calc()"></div>
+<div class="sl"><span>New-user promo spend redirected</span><b id="a3"></b><input type="range" id="cu" min="0" max="40" value="15" oninput="calc()"></div>
+<div class="g" id="out"></div><p class="mut" id="note" style="margin-top:10px"></p></div>
+</section>
+</div>
+<script>
+const $=s=>document.querySelector(s),esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let sd=7;const rnd=()=>{sd|=0;sd=sd+0x6D2B79F5|0;let t=Math.imul(sd^sd>>>15,1|sd);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
+const P=[["Milk 1L",32,.8],["Bread loaf",45,.5],["Eggs (6)",48,.5],["Curd 500g",40,.6],["Atta 5kg",260,.2],["Paracetamol strip",30,.3],["ORS sachet",22,.25],["Notebook A4",60,.35],["Gel pens (5)",50,.3],["Cake slice",90,.3]];
+const S=[["Lakshmi Provisions",.97,10,[0,2,3,4]],["Sri Sai Medicals",.95,20,[5,6]],["Bake House",.93,6,[0,1,9]],["Campus Stationers",.96,72,[7,8]],["Daily Fresh Mart",.9,72,[0,1,2,3,4,5,6]],["City Super Bazaar",.88,60,[0,1,2,3,4,7,8,9]]];
+const stores=S.map(([n,rel,cad,ix],id)=>({id,n,rel,eta:12+Math.floor(rnd()*14),items:ix.map(j=>({n:P[j][0],price:P[j][1]+Math.round(rnd()*4-2),v:P[j][2],qty:2+Math.floor(rnd()*9),h:+(rnd()*cad).toFixed(1)}))}));
+let q='',on=true,cart=[],cur=0,R=null,ses=[0,0],gaps={"ragi flour":23,"geometry box":17,"filter coffee":14,"baby diapers":12};
+function cdf(k,l){if(k<0)return 0;let t=Math.exp(-l),s=t;for(let i=1;i<=k;i++){t*=l/i;s+=t}return Math.min(1,s)}
+function samp(l){const L=Math.exp(-l);let k=0,p=1;do{k++;p*=Math.random()}while(p>L);return k-1}
+const conf=(it,s)=>it.qty<=0?0:Math.round(100*cdf(it.qty-1,it.v*it.h)*s.rel);
+const real=(it,s)=>it.qty>0&&samp(it.v*it.h*(.6+Math.random()*1.1))<it.qty&&Math.random()<s.rel;
+const bd=c=>c>=70?['ok','Reliable']:c>=40?['warn','Check']:['bad','Risky'];
+const mt=c=>`<span class="m"><i style="width:${c}%;background:var(--${bd(c)[0]})"></i></span>`;
+const age=h=>h<1?'just now':h<24?Math.round(h)+'h ago':(h/24).toFixed(1)+'d ago';
+function tab(n){[0,1,2].forEach(i=>{$('#v'+i).hidden=i!=n;$('#nav').children[i].classList.toggle('on',i==n)});if(n==0)res();if(n==1)sv();if(n==2){if(!R)sim();calc()}}
+/* Customer app */
+function res(){const t=q.trim().toLowerCase();let r=[];stores.forEach(s=>s.items.forEach((it,i)=>{if(it.qty>0&&(!t||it.n.toLowerCase().includes(t)))r.push({s,it,i,c:conf(it,s)})}));let h=0;
+if(on){r.sort((a,b)=>b.c-a.c);const g=r.filter(x=>x.c>=40);h=r.length-g.length;r=g}else r.sort((a,b)=>a.it.price-b.it.price);
+let H='<h2>'+(on?'Ranked by chance it is really in stock':'Everything listed as in stock')+'</h2>';
+H+=r.length?r.map(x=>`<div class="row"><div><b>${x.it.n}</b><small>${x.s.n} - ₹${x.it.price} - ${x.s.eta} min</small></div>${on?`<span class="tag ${bd(x.c)[0]}">${bd(x.c)[1]} ${x.c}%</span>${mt(x.c)}`:'<span class="tag gr">In stock</span>'}<button onclick="add(${x.s.id},${x.i})">Add</button></div>`).join(''):`<p class="mut">No nearby store stocks "${esc(t)}". <button onclick="gap()">Tell nearby stores there is demand</button></p>`;
+if(h)H+=`<small>${h} risky listing${h>1?'s':''} hidden because stock data is stale.</small>`;$('#res').innerHTML=H}
+function gap(){const t=q.trim().toLowerCase();if(!t)return;let any=0;stores.forEach(s=>s.items.forEach(it=>{if(it.qty>0&&it.n.toLowerCase().includes(t))any=1}));if(any)return;gaps[t]=(gaps[t]||0)+1;$('#res').innerHTML=`<p><b>Logged.</b> Stores will see "${esc(t)}" in their demand feed on the Store dashboard.</p>`}
+function add(s,i){cart.push([s,i]);cr()}
+function cr(){const c=$('#cart');c.innerHTML=cart.length?cart.map((l,k)=>{const s=stores[l[0]],it=s.items[l[1]];return`<div class="row"><div><b>${it.n}</b><small>${s.n}</small></div>₹${it.price}<button onclick="cart.splice(${k},1);cr()">Remove</button></div>`}).join('')+`<div class="row"><div><b>Total ₹${cart.reduce((a,l)=>a+stores[l[0]].items[l[1]].price,0)}</b></div><button class="pri" onclick="order()">Place order</button></div>`:'<p class="mut">Add items from the search results above.</p>'}
+function line(sid,i){const s=stores[sid],it=s.items[i];if(real(it,s))return[1,`${it.n}: confirmed by ${s.n}`];
+const alt=stores.filter(x=>x.id!=sid).flatMap(x=>x.items.map(y=>({x,y})).filter(o=>o.y.n==it.n&&o.y.qty>0)).sort((a,b)=>conf(b.y,b.x)-conf(a.y,a.x));
+if(on){it.qty=0;it.h=0;for(const o of alt.slice(0,2))if(real(o.y,o.x))return[1,`${it.n}: ${s.n} was out, rerouted to ${o.x.n} and their listing was corrected`];return[0,`${it.n}: unavailable nearby. Refunded instantly before dispatch and listing corrected`]}
+return[0,`${it.n}: store had none. Cancelled after payment, refund ticket raised`]}
+function order(){const r=cart.map(l=>line(l[0],l[1])),f=r.some(x=>!x[0]);ses[0]++;if(f)ses[1]++;cart=[];cr();
+$('#rc').innerHTML='<div class="c" style="margin-top:10px">'+r.map(x=>`<p><span class="tag ${x[0]?'ok':'bad'}">${x[0]?'Done':'Failed'}</span> ${x[1]}</p>`).join('')+`<small>This session: ${ses[1]} of ${ses[0]} orders had a failed item.</small></div>`;res()}
+/* Store dashboard */
+function sv(){$('#ss').innerHTML=stores.map(s=>`<option value="${s.id}" ${s.id==cur?'selected':''}>${s.n}</option>`).join('');const s=stores[cur],n=s.items.filter(it=>conf(it,s)<70).length;
+let H=`<div class="c"><h2>${n?n+' item'+(n>1?'s':'')+' need a quick check':'All listings look healthy'}</h2><p class="mut">Customers only see items they can trust. Stale listings sink in search and then disappear.</p><button class="pri" onclick="fresh()">Everything on the shelf is still there</button></div><div class="c"><h2>Your stock</h2>`;
+H+=s.items.map((it,i)=>{const c=conf(it,s);return`<div class="row"><div><b>${it.n}</b><small>Updated ${age(it.h)}</small></div><span><button onclick="qty(${i},-1)" aria-label="Less">-</button> <b>${it.qty}</b> <button onclick="qty(${i},1)" aria-label="More">+</button></span><span class="tag ${bd(c)[0]}">${c}%</span>${mt(c)}<button onclick="it_(${i},0)">Still here</button><button onclick="it_(${i},1)">Out</button></div>`}).join('')+'</div>';
+const g=Object.entries(gaps).sort((a,b)=>b[1]-a[1]);
+H+=`<div class="c"><h2>What customers searched for and could not find</h2>`+(g.length?g.map((x,i)=>`<div class="row"><div><b>${esc(x[0])}</b><small>${x[1]} searches with no result</small></div><button onclick="stock(${i})">I can stock this</button></div>`).join(''):'<p class="mut">No unmet demand right now.</p>')+'</div>';$('#sv').innerHTML=H}
+const qty=(i,d)=>{const it=stores[cur].items[i];it.qty=Math.max(0,it.qty+d);it.h=0;sv()};
+const it_=(i,o)=>{const it=stores[cur].items[i];it.h=0;if(o)it.qty=0;sv()};
+const fresh=()=>{stores[cur].items.forEach(it=>{if(it.qty>0)it.h=0});sv()};
+function stock(i){const k=Object.entries(gaps).sort((a,b)=>b[1]-a[1])[i][0];stores[cur].items.push({n:k[0].toUpperCase()+k.slice(1),price:60,v:.3,qty:6,h:0});delete gaps[k];sv()}
+/* Proof */
+function sim(){const all=[];stores.forEach(s=>s.items.forEach(it=>all.push([s,it])));const names=[...new Set(all.map(x=>x[1].n))];let a=0,b=0,v=0;
+for(let n=0;n<3000;n++){const nm=names[Math.floor(Math.random()*names.length)],c=all.filter(x=>x[1].n==nm&&x[1].qty>0);if(!c.length)continue;v++;
+const r=c[Math.floor(Math.random()*c.length)];if(!real(r[1],r[0]))a++;
+c.sort((x,y)=>conf(y[1],y[0])-conf(x[1],x[0]));if(!(real(c[0][1],c[0][0])||(c[1]&&real(c[1][1],c[1][0]))))b++}
+R={a:a/v*100,b:b/v*100};const bar=(l,x,k)=>`<p>${l}: <b>${x.toFixed(1)}%</b> of orders hit an unavailable item</p><div class="bar"><i style="width:${Math.min(100,x*2)}%;background:var(--${k})"></i></div>`;
+$('#sim').innerHTML='<div style="margin-top:12px">'+bar('Today: any listed store',R.a,'bad')+bar('With NovaTrust: best-scored store plus one fallback',R.b,'ok')+`<p><b>${(100-R.b/R.a*100).toFixed(0)}% fewer stock-out failures.</b></p></div>`}
+function calc(){if(!R)return;const ad=$('#ad').value/100,pp=+$('#pp').value,cu=+$('#cu').value;$('#a1').textContent=Math.round(ad*100)+'%';$('#a2').textContent='+'+pp;$('#a3').textContent=cu+'%';
+const eff=(1-R.b/R.a)*ad,sv_=38500*.0583*eff,rev=sv_*486*.139/1e5,ret=46000*pp/100*486*.139/1e5,sup=1652*eff*60/1e5,pr=9.86*cu/100,tot=rev+ret+sup+pr,dir=rev+sup;
+const k=(t,v,s)=>`<div class="c" style="margin:0"><small>${t}</small><div class="big">${v}</div><small>${s}</small></div>`;
+$('#out').innerHTML=k('Orders saved a month',Math.round(sv_).toLocaleString('en-IN'),'of about 2,245 inventory failures')+k('Direct recovery','₹'+dir.toFixed(1)+'L/mo','revenue plus support cost')+k('Retention gain','₹'+ret.toFixed(1)+'L/mo','from repeat rate points')+k('Promo redirected','₹'+pr.toFixed(1)+'L/mo','of ₹9.9L acquisition spend')+k('Total benefit','₹'+tot.toFixed(1)+'L/mo',tot>0?'pays back ₹25L in '+(25/tot).toFixed(1)+' months':'')+'';
+$('#note').textContent='Assumptions: 38,500 orders, ₹486 order value, 13.9% take rate, 5.8% of orders fail on inventory, 1,652 inventory tickets at ₹60 each. Direct fixes alone do not repay ₹25L within six months; retention and promo reallocation drive the return, so track repeat rate first.'}
+tab(0);cr();
+</script></body></html>
